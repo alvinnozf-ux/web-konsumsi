@@ -156,7 +156,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -173,8 +173,8 @@ export default function UsersPage() {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="card overflow-hidden">
+      {/* Tabel — desktop */}
+      <div className="card overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -217,19 +217,11 @@ export default function UsersPage() {
                     <td className="table-td text-gray-500 text-xs">{formatDate(user.createdAt)}</td>
                     <td className="table-td">
                       <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => openEditForm(user)}
-                          className="p-1.5 rounded-md text-gray-500 hover:bg-yellow-50 hover:text-yellow-700 transition-colors"
-                          title="Edit"
-                        >
+                        <button onClick={() => openEditForm(user)} className="p-1.5 rounded-md text-gray-500 hover:bg-yellow-50 hover:text-yellow-700 transition-colors" title="Edit">
                           <Pencil size={15} />
                         </button>
                         {user.id !== session?.user?.id && (
-                          <button
-                            onClick={() => setDeleteTarget(user)}
-                            className="p-1.5 rounded-md text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-                            title="Hapus"
-                          >
+                          <button onClick={() => setDeleteTarget(user)} className="p-1.5 rounded-md text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors" title="Hapus">
                             <Trash2 size={15} />
                           </button>
                         )}
@@ -241,6 +233,47 @@ export default function UsersPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Card view — mobile */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="py-16 text-center">
+            <Loader2 className="animate-spin mx-auto text-blue-600" size={28} />
+          </div>
+        ) : users.length === 0 ? (
+          <div className="py-8 text-center text-gray-400 text-sm">Belum ada user</div>
+        ) : (
+          users.map((user) => (
+            <div key={user.id} className={`card p-4 space-y-2 ${user.id === session?.user?.id ? "border-blue-200" : ""}`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {user.nama}
+                    {user.id === session?.user?.id && <span className="ml-1 text-xs text-blue-600">(Anda)</span>}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">Bergabung {formatDate(user.createdAt)}</p>
+                </div>
+                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${roleBadge(user.role)}`}>
+                  {roleLabel(user.role)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                <p className="text-xs text-gray-500">{user._count?.permintaan ?? 0} permintaan</p>
+                <div className="flex gap-2">
+                  <button onClick={() => openEditForm(user)} className="btn-secondary py-1.5 px-3 text-xs">
+                    <Pencil size={13} />Edit
+                  </button>
+                  {user.id !== session?.user?.id && (
+                    <button onClick={() => setDeleteTarget(user)} className="p-1.5 rounded-md text-red-500 hover:bg-red-50 transition-colors">
+                      <Trash2 size={15} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Form Modal */}

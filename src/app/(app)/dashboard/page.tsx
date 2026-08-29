@@ -209,8 +209,8 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Table */}
-      <div className="card overflow-hidden">
+      {/* Tabel — desktop */}
+      <div className="card overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -294,11 +294,76 @@ export default function DashboardPage() {
             </tbody>
           </table>
         </div>
-
         {!loading && permintaan.length > 0 && (
           <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Menampilkan {(page - 1) * 10 + 1}–{Math.min(page * 10, total)} dari {total} data
+            </p>
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          </div>
+        )}
+      </div>
+
+      {/* Card view — mobile */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="py-16 text-center">
+            <Loader2 className="animate-spin mx-auto text-blue-600" size={28} />
+            <p className="text-sm text-gray-400 mt-2">Memuat data...</p>
+          </div>
+        ) : permintaan.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="text-gray-400 text-sm">Tidak ada data ditemukan</p>
+            <Link href="/permintaan/baru" className="btn-primary mt-4 inline-flex">
+              <PlusCircle size={14} />Buat Permintaan Pertama
+            </Link>
+          </div>
+        ) : (
+          permintaan.map((p) => (
+            <div key={p.id} className="card p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-semibold text-gray-900 text-sm leading-tight">{p.namaAcara}</h3>
+                <StatusBadge status={p.status} />
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                <div><span className="font-medium text-gray-700">Tanggal:</span> {formatTanggal(p.tanggal)}</div>
+                <div><span className="font-medium text-gray-700">Jam:</span> {p.jamMulai}–{p.jamSelesai}</div>
+                <div><span className="font-medium text-gray-700">Ruangan:</span> {p.ruangan}</div>
+                <div><span className="font-medium text-gray-700">Pemohon:</span> {p.pemohon.nama}</div>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {p.items.map((item) => (
+                  <span key={item.id} className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                    {item.jenis === "DLL" && item.keterangan ? item.keterangan : JENIS_LABEL[item.jenis]}
+                    <span className="font-semibold">{item.qty}</span>
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-1 border-t border-gray-100">
+                <Link href={`/permintaan/${p.id}`} className="btn-secondary py-1.5 px-3 text-xs">
+                  <Eye size={13} />Detail
+                </Link>
+                <Link href={`/permintaan/${p.id}/edit`} className="btn-secondary py-1.5 px-3 text-xs">
+                  <Pencil size={13} />Edit
+                </Link>
+                {isAdmin && STATUS_NEXT[p.status] && (
+                  <button onClick={() => setStatusTarget(p)} className="btn-secondary py-1.5 px-3 text-xs">
+                    <RefreshCw size={13} />{STATUS_NEXT[p.status].label}
+                  </button>
+                )}
+                {isAdmin && (
+                  <button onClick={() => setDeleteTarget(p)} className="p-1.5 rounded-md text-red-500 hover:bg-red-50 transition-colors">
+                    <Trash2 size={15} />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+        {!loading && permintaan.length > 0 && (
+          <div className="flex items-center justify-between pt-2">
+            <p className="text-sm text-gray-500">
+              {(page - 1) * 10 + 1}–{Math.min(page * 10, total)} dari {total}
             </p>
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>

@@ -126,7 +126,7 @@ export default function PersetujuanPage() {
   );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -165,75 +165,106 @@ export default function PersetujuanPage() {
       )}
 
       {!loading && list.length > 0 && (
-        <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="table-th">Nama Acara</th>
-                  <th className="table-th">Tanggal & Jam</th>
-                  <th className="table-th">Ruangan</th>
-                  <th className="table-th">Pemohon</th>
-                  <th className="table-th">Konsumsi</th>
-                  <th className="table-th">Diajukan</th>
-                  <th className="table-th text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {list.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="table-td">
-                      <p className="font-medium text-gray-900">{p.namaAcara}</p>
-                      {p.catatan && <p className="text-xs text-gray-400 mt-0.5 max-w-xs truncate">📝 {p.catatan}</p>}
-                    </td>
-                    <td className="table-td whitespace-nowrap">
-                      <div className="font-medium">{formatTanggal(p.tanggal)}</div>
-                      <div className="text-xs text-gray-400">{p.jamMulai} – {p.jamSelesai} WIB</div>
-                    </td>
-                    <td className="table-td">
-                      <span className="text-sm text-gray-700">{p.ruangan}</span>
-                    </td>
-                    <td className="table-td">
-                      <div className="font-medium">{p.pemohon.nama}</div>
-                      <div className="text-xs text-gray-400">{p.pemohon.jabatan}</div>
-                    </td>
-                    <td className="table-td">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {p.items.map((item) => (
-                          <span key={item.id} className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-100">
-                            {item.jenis === "DLL" && item.keterangan ? item.keterangan : JENIS_LABEL[item.jenis]}
-                            <span className="font-bold">{item.qty}</span>
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="table-td text-xs text-gray-500 whitespace-nowrap">{formatCreatedAt(p.createdAt)}</td>
-                    <td className="table-td">
-                      <div className="flex items-center justify-center gap-2">
-                        <Link href={`/permintaan/${p.id}`}
-                          className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-                          title="Lihat Detail"
-                        >
-                          <Eye size={15} />
-                        </Link>
-                        <button onClick={() => setSetujuiTarget(p)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors"
-                        >
-                          <CheckCircle size={13} />Setujui
-                        </button>
-                        <button onClick={() => { setTolakTarget(p); setAlasanTolak(""); setAlasanError(""); }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors"
-                        >
-                          <XCircle size={13} />Tolak
-                        </button>
-                      </div>
-                    </td>
+        <>
+          {/* Tabel — desktop */}
+          <div className="card overflow-hidden hidden md:block">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="table-th">Nama Acara</th>
+                    <th className="table-th">Tanggal & Jam</th>
+                    <th className="table-th">Ruangan</th>
+                    <th className="table-th">Pemohon</th>
+                    <th className="table-th">Konsumsi</th>
+                    <th className="table-th">Diajukan</th>
+                    <th className="table-th text-center">Aksi</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {list.map((p) => (
+                    <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="table-td">
+                        <p className="font-medium text-gray-900">{p.namaAcara}</p>
+                        {p.catatan && <p className="text-xs text-gray-400 mt-0.5 max-w-xs truncate">📝 {p.catatan}</p>}
+                      </td>
+                      <td className="table-td whitespace-nowrap">
+                        <div className="font-medium">{formatTanggal(p.tanggal)}</div>
+                        <div className="text-xs text-gray-400">{p.jamMulai} – {p.jamSelesai} WIB</div>
+                      </td>
+                      <td className="table-td"><span className="text-sm text-gray-700">{p.ruangan}</span></td>
+                      <td className="table-td">
+                        <div className="font-medium">{p.pemohon.nama}</div>
+                        <div className="text-xs text-gray-400">{p.pemohon.jabatan}</div>
+                      </td>
+                      <td className="table-td">
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {p.items.map((item) => (
+                            <span key={item.id} className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-100">
+                              {item.jenis === "DLL" && item.keterangan ? item.keterangan : JENIS_LABEL[item.jenis]}
+                              <span className="font-bold">{item.qty}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="table-td text-xs text-gray-500 whitespace-nowrap">{formatCreatedAt(p.createdAt)}</td>
+                      <td className="table-td">
+                        <div className="flex items-center justify-center gap-2">
+                          <Link href={`/permintaan/${p.id}`} className="p-1.5 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors" title="Lihat Detail">
+                            <Eye size={15} />
+                          </Link>
+                          <button onClick={() => setSetujuiTarget(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors">
+                            <CheckCircle size={13} />Setujui
+                          </button>
+                          <button onClick={() => { setTolakTarget(p); setAlasanTolak(""); setAlasanError(""); }} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors">
+                            <XCircle size={13} />Tolak
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Card view — mobile */}
+          <div className="md:hidden space-y-3">
+            {list.map((p) => (
+              <div key={p.id} className="card p-4 space-y-3">
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">{p.namaAcara}</p>
+                  {p.catatan && <p className="text-xs text-gray-400 mt-0.5">📝 {p.catatan}</p>}
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                  <div><span className="font-medium text-gray-700">Tanggal:</span> {formatTanggal(p.tanggal)}</div>
+                  <div><span className="font-medium text-gray-700">Jam:</span> {p.jamMulai}–{p.jamSelesai}</div>
+                  <div><span className="font-medium text-gray-700">Ruangan:</span> {p.ruangan}</div>
+                  <div><span className="font-medium text-gray-700">Pemohon:</span> {p.pemohon.nama}</div>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {p.items.map((item) => (
+                    <span key={item.id} className="inline-flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-100">
+                      {item.jenis === "DLL" && item.keterangan ? item.keterangan : JENIS_LABEL[item.jenis]}
+                      <span className="font-bold">{item.qty}</span>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                  <Link href={`/permintaan/${p.id}`} className="btn-secondary py-1.5 px-3 text-xs flex-1 justify-center">
+                    <Eye size={13} />Detail
+                  </Link>
+                  <button onClick={() => setSetujuiTarget(p)} className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-medium hover:bg-green-700 transition-colors flex-1">
+                    <CheckCircle size={13} />Setujui
+                  </button>
+                  <button onClick={() => { setTolakTarget(p); setAlasanTolak(""); setAlasanError(""); }} className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700 transition-colors flex-1">
+                    <XCircle size={13} />Tolak
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Modal Setujui */}

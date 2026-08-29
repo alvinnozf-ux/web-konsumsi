@@ -129,7 +129,7 @@ export default function PermintaanBaruPage() {
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-4 md:p-6 max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <Link href="/dashboard" className="btn-secondary p-2"><ArrowLeft size={16} /></Link>
         <div>
