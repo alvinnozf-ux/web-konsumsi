@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  nama       String
+  role       String   @default("STAFF") // ADMIN | STAFF | APPROVER
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  permintaan Permintaan[]
+}
+
+model Permintaan {
+  id           String   @id @default(cuid())
+  namaAcara    String
+  jurusan      String
+  tanggal      DateTime
+  jamMulai     String
+  jamSelesai   String
+  ruangan      String
+  status       String   @default("PENDING") // PENDING | DISETUJUI | DITOLAK | SELESAI
+  alasanTolak  String?
+  catatan      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pemohonId    String
+  pemohon      User     @relation(fields: [pemohonId], references: [id])
+
+  items        ItemKonsumsi[]
+}
+
+model ItemKonsumsi {
+  id           String     @id @default(cuid())
+  jenis        String     // SNACK_PAGI | SNACK_SORE | MAKAN_SIANG | KOPI | AIR_MINERAL | DLL
+  qty          Int
+  keterangan   String?    // untuk jenis DLL, isi keterangan
+
+  permintaanId String
+  permintaan   Permintaan @relation(fields: [permintaanId], references: [id], onDelete: Cascade)
+}
