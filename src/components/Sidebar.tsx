@@ -35,6 +35,14 @@ export function Sidebar() {
   const isAdmin = role === "ADMIN";
   const isApprover = role === "APPROVER";
   const [open, setOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Tutup sidebar saat navigasi
   useEffect(() => {
@@ -66,9 +74,8 @@ export function Sidebar() {
     );
   }
 
-  const SidebarContent = () => (
+  const SidebarContent = ({ showClose }: { showClose?: boolean }) => (
     <aside className="no-print w-64 min-h-screen flex flex-col" style={{ backgroundColor: "#1e3a5f" }}>
-      {/* Logo */}
       <div className="px-4 py-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <img
@@ -80,55 +87,43 @@ export function Sidebar() {
             <p className="text-white font-semibold text-xs leading-tight">SMK Mitra Industri</p>
             <p className="text-blue-300 text-xs leading-tight">MM2100 &amp; 03</p>
           </div>
-          {/* Tombol tutup di mobile */}
-          <button
-            onClick={() => setOpen(false)}
-            className="ml-auto text-blue-300 hover:text-white md:hidden"
-          >
-            <X size={20} />
-          </button>
+          {showClose && (
+            <button
+              onClick={() => setOpen(false)}
+              className="ml-auto text-blue-300 hover:text-white"
+            >
+              <X size={20} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        <p className="px-3 pb-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">
-          Menu
-        </p>
-
+        <p className="px-3 pb-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">Menu</p>
         {mainNavItems.map((item) => (
           <NavLink key={item.href} {...item} />
         ))}
-
         {isAdmin && (
           <>
-            <p className="px-3 pt-4 pb-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">
-              Admin
-            </p>
+            <p className="px-3 pt-4 pb-2 text-xs font-semibold text-blue-300 uppercase tracking-wider">Admin</p>
             {adminItems.map((item) => (
               <NavLink key={item.href} {...item} />
             ))}
           </>
         )}
-
         {isApprover && (
           <div className="mt-4 mx-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
             <p className="text-xs text-blue-300">
               Anda login sebagai <span className="font-semibold text-white">Approver</span>
             </p>
-            <p className="text-xs text-blue-400 mt-0.5">
-              Akses terbatas pada persetujuan permintaan
-            </p>
+            <p className="text-xs text-blue-400 mt-0.5">Akses terbatas pada persetujuan permintaan</p>
           </div>
         )}
       </nav>
 
-      {/* User info + logout */}
       <div className="px-3 py-4 border-t border-white/10">
         <div className="px-3 mb-3">
-          <p className="text-white text-sm font-medium truncate">
-            {session?.user?.name}
-          </p>
+          <p className="text-white text-sm font-medium truncate">{session?.user?.name}</p>
           <p className="text-blue-300 text-xs truncate">
             {role === "ADMIN" ? "Admin" : role === "APPROVER" ? "Approver" : "Staff"}
           </p>
@@ -144,36 +139,37 @@ export function Sidebar() {
     </aside>
   );
 
+  // Desktop: sidebar permanent
+  if (isDesktop) {
+    return <SidebarContent />;
+  }
+
+  // Mobile: hamburger + slide-in
   return (
     <>
-      {/* Tombol hamburger di mobile */}
+      {/* Tombol hamburger */}
       <button
         onClick={() => setOpen(true)}
-        className="no-print fixed top-4 left-4 z-50 md:hidden bg-[#1e3a5f] text-white p-2 rounded-lg shadow-lg"
+        className="no-print fixed top-3 left-3 z-50 bg-[#1e3a5f] text-white p-2 rounded-lg shadow-lg"
+        style={{ display: open ? "none" : "flex" }}
       >
         <Menu size={22} />
       </button>
 
-      {/* Overlay background saat sidebar terbuka di mobile */}
+      {/* Overlay */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 z-40"
           onClick={() => setOpen(false)}
         />
       )}
 
-      {/* Sidebar mobile — slide dari kiri */}
+      {/* Sidebar slide-in */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:hidden ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className="fixed inset-y-0 left-0 z-50 transition-transform duration-300"
+        style={{ transform: open ? "translateX(0)" : "translateX(-100%)" }}
       >
-        <SidebarContent />
-      </div>
-
-      {/* Sidebar desktop — selalu tampil */}
-      <div className="hidden md:block">
-        <SidebarContent />
+        <SidebarContent showClose />
       </div>
     </>
   );
