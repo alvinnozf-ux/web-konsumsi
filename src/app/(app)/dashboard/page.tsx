@@ -149,14 +149,14 @@ export default function DashboardPage() {
     new Date(str).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Dashboard Permintaan</h1>
           <p className="text-sm text-gray-500 mt-0.5">{total} permintaan ditemukan</p>
         </div>
         <Link href="/permintaan/baru" className="btn-primary">
-          <PlusCircle size={16} />Buat Permintaan
+          <PlusCircle size={16} /><span className="hidden sm:inline">Buat Permintaan</span><span className="sm:hidden">Buat</span>
         </Link>
       </div>
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   PlusCircle,
@@ -10,6 +11,8 @@ import {
   LogOut,
   ChevronRight,
   ClipboardCheck,
+  Menu,
+  X,
 } from "lucide-react";
 
 const staffNavItems = [
@@ -31,13 +34,18 @@ export function Sidebar() {
   const role = session?.user?.role;
   const isAdmin = role === "ADMIN";
   const isApprover = role === "APPROVER";
+  const [open, setOpen] = useState(false);
+
+  // Tutup sidebar saat navigasi
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(href);
   };
 
-  // Tentukan nav items berdasarkan role
   const mainNavItems = isApprover ? approverNavItems : staffNavItems;
 
   function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) {
@@ -58,7 +66,7 @@ export function Sidebar() {
     );
   }
 
-  return (
+  const SidebarContent = () => (
     <aside className="no-print w-64 min-h-screen flex flex-col" style={{ backgroundColor: "#1e3a5f" }}>
       {/* Logo */}
       <div className="px-4 py-4 border-b border-white/10">
@@ -72,6 +80,13 @@ export function Sidebar() {
             <p className="text-white font-semibold text-xs leading-tight">SMK Mitra Industri</p>
             <p className="text-blue-300 text-xs leading-tight">MM2100 &amp; 03</p>
           </div>
+          {/* Tombol tutup di mobile */}
+          <button
+            onClick={() => setOpen(false)}
+            className="ml-auto text-blue-300 hover:text-white md:hidden"
+          >
+            <X size={20} />
+          </button>
         </div>
       </div>
 
@@ -96,7 +111,6 @@ export function Sidebar() {
           </>
         )}
 
-        {/* Badge role */}
         {isApprover && (
           <div className="mt-4 mx-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
             <p className="text-xs text-blue-300">
@@ -128,5 +142,39 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Tombol hamburger di mobile */}
+      <button
+        onClick={() => setOpen(true)}
+        className="no-print fixed top-4 left-4 z-50 md:hidden bg-[#1e3a5f] text-white p-2 rounded-lg shadow-lg"
+      >
+        <Menu size={22} />
+      </button>
+
+      {/* Overlay background saat sidebar terbuka di mobile */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Sidebar mobile — slide dari kiri */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:hidden ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <SidebarContent />
+      </div>
+
+      {/* Sidebar desktop — selalu tampil */}
+      <div className="hidden md:block">
+        <SidebarContent />
+      </div>
+    </>
   );
 }
