@@ -25,6 +25,10 @@ prisma/dev.db-journal
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+dev-server.log
+
+# Scripts sementara
+extract-pdf.mjs
 
 # OS
 .DS_Store
