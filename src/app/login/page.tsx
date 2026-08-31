@@ -163,11 +163,14 @@ export default function LoginPage() {
         </div>
 
         {/* ── Form area ── */}
-        <div className="flex-1 md:flex-none w-full md:max-w-[360px] bg-slate-50 md:bg-transparent px-6 py-8 md:p-0">
+        <div
+          className="flex-1 md:flex-none w-full md:max-w-[360px] md:bg-transparent px-6 py-8 md:p-0"
+          style={{ backgroundColor: "#f8fafc", colorScheme: "light" }}
+        >
 
           <div className="mb-7">
-            <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Masuk</h2>
-            <p className="text-sm text-gray-400 mt-1">Gunakan username &amp; password akun kamu</p>
+            <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: "#111827" }}>Masuk</h2>
+            <p className="text-sm mt-1" style={{ color: "#9ca3af" }}>Gunakan username &amp; password akun kamu</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
