@@ -231,9 +231,8 @@ ItemKonsumsi  → id, jenis, qty, keterangan, permintaanId
 - ✅ **Notifikasi email** — sudah jalan via Nodemailer + Gmail (`alvinnozf@gmail.com` → `alvinozefanyaa@gmail.com`)
   - Nanti ganti ke email khusus SiPeKon kalau sudah dibuat
   - Approver bisa ditambah sampai 3 email (pisah koma di `APPROVER_EMAIL`)
-- ⏳ **Notifikasi WhatsApp** ke Approver via Fonnte (alternatif jika mau WA)
-- ⏳ **Push ke GitHub** — https://github.com/alvinnozf-ux/web-konsumsi
-- ⏳ **Deploy ke Vercel** — supaya bisa diakses tanpa laptop nyala
+- ✅ **Push ke GitHub** — https://github.com/alvinnozf-ux/web-konsumsi
+- ✅ **Deploy ke Vercel** — https://konsumsi-app.vercel.app (bisa diakses siapa saja, tanpa laptop nyala)
 
 ---
 
