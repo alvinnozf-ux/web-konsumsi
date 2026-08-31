@@ -208,7 +208,7 @@ export default function DashboardPage() {
     const jam = new Date().getHours();
     if (jam < 11) return "Selamat pagi";
     if (jam < 15) return "Selamat siang";
-    if (jam < 19) return "Selamat sore";
+    if (jam < 18) return "Selamat sore";
     return "Selamat malam";
   }
 
