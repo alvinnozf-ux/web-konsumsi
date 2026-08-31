@@ -99,78 +99,25 @@ export default function LoginPage() {
         <p className="relative z-10 text-white/20 text-xs">© 2026 SiPeKon</p>
       </div>
 
-      {/* Right — form (desktop) + full page (mobile) */}
-      <div className="flex-1 flex flex-col md:items-center md:justify-center md:bg-slate-50 md:p-6">
+      {/* Right — form */}
+      <div className="flex-1 flex items-center justify-center bg-slate-50 p-6">
+        <div className="w-full max-w-[360px]">
 
-        {/* ── Mobile header (branding panel versi mobile, ref dari desktop) ── */}
-        <div
-          className="md:hidden relative overflow-hidden px-6 pt-12 pb-10 flex flex-col justify-between"
-          style={{ background: "linear-gradient(160deg, #0a1628 0%, #0f2035 55%, #162d4a 100%)" }}
-        >
-          {/* Grid bg */}
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage: "linear-gradient(rgba(255,255,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.6) 1px, transparent 1px)",
-              backgroundSize: "36px 36px",
-            }}
-          />
-          {/* Glow blob */}
-          <div
-            className="absolute bottom-0 right-0 w-48 h-48 rounded-full opacity-10 blur-3xl"
-            style={{ background: "#3b82f6" }}
-          />
-
-          {/* Logo row */}
-          <div className="relative z-10 flex items-center gap-2.5 mb-6">
-            <div className="flex items-center gap-1.5">
-              <img src="/logo-mm2100.png" alt="SMK MM2100" className="w-8 h-8 rounded-full object-cover border border-white/20 shadow-md" />
-              <img src="/logo-03.png" alt="SMK 03" className="w-8 h-8 rounded-full object-cover border border-white/20 shadow-md" />
+          {/* Mobile logo */}
+          <div className="md:hidden flex items-center gap-2.5 mb-8">
+            <div className="flex items-center gap-1">
+              <img src="/logo-mm2100.png" alt="SMK MM2100" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+              <img src="/logo-03.png" alt="SMK 03" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
             </div>
             <div>
-              <p className="text-white text-sm font-bold leading-none">SMK Mitra Industri</p>
-              <p className="text-white/30 text-[11px] mt-0.5">MM2100 &amp; 03</p>
+              <p className="text-gray-900 font-bold text-sm leading-none">SMK Mitra Industri</p>
+              <p className="text-gray-400 text-xs mt-0.5">Sistem Permintaan Konsumsi</p>
             </div>
           </div>
-
-          {/* Headline — sama persis dengan desktop */}
-          <div className="relative z-10 space-y-4">
-            <div>
-              <h1 className="text-[32px] font-extrabold text-white leading-[1.1] tracking-tight">
-                Sistem<br />
-                Permintaan<br />
-                <span className="text-blue-400">Konsumsi.</span>
-              </h1>
-              <p className="text-white/40 text-sm leading-relaxed mt-2">
-                Kelola permintaan konsumsi seluruh jurusan dalam satu tempat.
-              </p>
-            </div>
-
-            {/* Stats strip */}
-            <div className="flex gap-6 pt-1">
-              {[
-                { num: "8", label: "Jurusan" },
-                { num: "3", label: "Role akses" },
-                { num: "100+", label: "Pengguna" },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="text-white text-base font-bold leading-none">{s.num}</p>
-                  <p className="text-white/35 text-xs mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Form area ── */}
-        <div
-          className="flex-1 md:flex-none w-full md:max-w-[360px] md:bg-transparent px-6 py-8 md:p-0"
-          style={{ backgroundColor: "#f8fafc", colorScheme: "light" }}
-        >
 
           <div className="mb-7">
-            <h2 className="text-2xl font-extrabold tracking-tight" style={{ color: "#111827" }}>Masuk</h2>
-            <p className="text-sm mt-1" style={{ color: "#9ca3af" }}>Gunakan username &amp; password akun kamu</p>
+            <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Masuk</h2>
+            <p className="text-sm text-gray-400 mt-1">Gunakan username &amp; password akun kamu</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>

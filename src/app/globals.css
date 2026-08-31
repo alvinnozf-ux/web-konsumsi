@@ -5,7 +5,6 @@
 @layer base {
   body {
     @apply bg-slate-50 text-gray-900 antialiased;
-    color-scheme: light;
   }
   * { @apply box-border; }
 
