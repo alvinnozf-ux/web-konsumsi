@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { sendPermintaanNotif } from "@/lib/mailer";
+
+export const runtime = "nodejs";
 
 const JURUSAN_LIST = ["TKR", "Elind", "TSM", "Akuntansi", "Mesin", "Hotel", "TKI", "Listrik"] as const;
 
@@ -96,6 +99,17 @@ export async function POST(req: NextRequest) {
       pemohon: { select: { id: true, nama: true } },
       items: true,
     },
+  });
+
+  // Kirim notif email ke Approver (fire-and-forget, gagal tidak ganggu response)
+  sendPermintaanNotif({
+    namaAcara,
+    namaPemohon: permintaan.pemohon.nama,
+    jurusan,
+    tanggal,
+    jamMulai,
+    jamSelesai,
+    ruangan,
   });
 
   return NextResponse.json(permintaan, { status: 201 });

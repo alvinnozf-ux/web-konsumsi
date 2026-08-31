@@ -1,31 +1,40 @@
 type Status = "PENDING" | "DISETUJUI" | "DITOLAK" | "SELESAI";
 
-const config: Record<Status, { label: string; className: string }> = {
+const config: Record<Status, { label: string; dot: string; className: string }> = {
   PENDING: {
     label: "Pending",
-    className: "bg-yellow-100 text-yellow-800 border border-yellow-200",
+    dot: "bg-amber-400",
+    className: "bg-amber-50 text-amber-700 border border-amber-200/80 ring-1 ring-amber-300/30",
   },
   DISETUJUI: {
     label: "Disetujui",
-    className: "bg-green-100 text-green-800 border border-green-200",
+    dot: "bg-emerald-500",
+    className: "bg-emerald-50 text-emerald-700 border border-emerald-200/80 ring-1 ring-emerald-300/30",
   },
   DITOLAK: {
     label: "Ditolak",
-    className: "bg-red-100 text-red-800 border border-red-200",
+    dot: "bg-red-500",
+    className: "bg-red-50 text-red-700 border border-red-200/80 ring-1 ring-red-300/30",
   },
   SELESAI: {
     label: "Selesai",
-    className: "bg-blue-100 text-blue-800 border border-blue-200",
+    dot: "bg-blue-500",
+    className: "bg-blue-50 text-blue-700 border border-blue-200/80 ring-1 ring-blue-300/30",
   },
 };
 
 export function StatusBadge({ status }: { status: string }) {
   const cfg = config[status as Status] ?? {
     label: status,
-    className: "bg-gray-100 text-gray-700 border border-gray-200",
+    dot: "bg-gray-400",
+    className: "bg-gray-50 text-gray-600 border border-gray-200",
   };
+
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cfg.className}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold tracking-wide ${cfg.className}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
       {cfg.label}
     </span>
   );

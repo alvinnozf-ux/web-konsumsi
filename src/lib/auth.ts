@@ -8,14 +8,14 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        nama: { label: "Nama", type: "text" },
-        password: { label: "Password", type: "password" },
+        username: { label: "Username", type: "text" },
+        password: { label: "Password",  type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.nama || !credentials?.password) return null;
+        if (!credentials?.username || !credentials?.password) return null;
 
-        const user = await prisma.user.findFirst({
-          where: { nama: credentials.nama },
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username },
         });
 
         if (!user) return null;
@@ -28,12 +28,9 @@ export const authOptions: NextAuthOptions = {
         if (!passwordMatch) return null;
 
         return {
-          id: user.id,
-          name: user.nama,
-          email: user.divisi,
+          id:   user.id,
+          name: user.nama,      // nama lengkap sebagai display name
           role: user.role,
-          jabatan: user.jabatan,
-          divisi: user.divisi,
         };
       },
     }),
@@ -41,19 +38,15 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id   = user.id;
         token.role = (user as any).role;
-        token.jabatan = (user as any).jabatan;
-        token.divisi = (user as any).divisi;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
+        session.user.id   = token.id as string;
         session.user.role = token.role as string;
-        session.user.jabatan = token.jabatan as string;
-        session.user.divisi = token.divisi as string;
       }
       return session;
     },

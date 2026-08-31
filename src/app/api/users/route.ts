@@ -6,23 +6,22 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const createUserSchema = z.object({
-  nama: z.string().min(2, "Nama minimal 2 karakter").max(100),
-  role: z.enum(["ADMIN", "STAFF", "APPROVER"]),
+  username: z.string().min(3, "Username minimal 3 karakter").max(50)
+    .regex(/^[a-z0-9_.]+$/, "Hanya huruf kecil, angka, titik, underscore"),
+  nama:     z.string().min(2, "Nama minimal 2 karakter").max(100),
+  role:     z.enum(["ADMIN", "STAFF", "APPROVER"]),
   password: z.string().min(6, "Password minimal 6 karakter"),
 });
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  if (session.user.role !== "ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const users = await prisma.user.findMany({
     select: {
       id: true,
+      username: true,
       nama: true,
       role: true,
       createdAt: true,
@@ -39,7 +38,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (session.user.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const body = await req.json();
+  const body   = await req.json();
   const result = createUserSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
@@ -48,17 +47,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { nama, role, password } = result.data;
+  const { username, nama, role, password } = result.data;
 
-  const existing = await prisma.user.findFirst({ where: { nama } });
+  const existing = await prisma.user.findUnique({ where: { username } });
   if (existing) {
-    return NextResponse.json({ error: "Nama sudah digunakan" }, { status: 409 });
+    return NextResponse.json({ error: "Username sudah digunakan" }, { status: 409 });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { nama, role, password: hashedPassword },
-    select: { id: true, nama: true, role: true, createdAt: true },
+    data: { username, nama, role, password: hashedPassword },
+    select: { id: true, username: true, nama: true, role: true, createdAt: true },
   });
 
   return NextResponse.json(user, { status: 201 });

@@ -47,9 +47,10 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
             onClick={() => onPageChange(p as number)}
             className={`w-8 h-8 rounded-md text-sm font-medium transition-colors ${
               p === page
-                ? "bg-blue-700 text-white"
+                ? "text-white shadow-sm"
                 : "border border-gray-200 text-gray-700 hover:bg-gray-50"
             }`}
+            style={p === page ? { background: "linear-gradient(135deg, #1e3a5f 0%, #0f2035 100%)" } : undefined}
           >
             {p}
           </button>

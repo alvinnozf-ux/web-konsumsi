@@ -37,6 +37,16 @@ const config: Config = {
       },
     },
   },
+  // Safelist arbitrary opacity classes used in Sidebar & components
+  safelist: [
+    "bg-white/[0.08]",
+    "bg-white/[0.05]",
+    "border-white/[0.08]",
+    "text-navy-700",
+    "bg-navy-700",
+    "bg-navy-800",
+    "bg-navy-900",
+  ],
   plugins: [],
 };
 

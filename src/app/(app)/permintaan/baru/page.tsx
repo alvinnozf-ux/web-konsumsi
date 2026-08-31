@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Coffee, UtensilsCrossed, Sandwich, Wind, Droplets, MoreHorizontal, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 type User = { id: string; nama: string };
@@ -12,12 +12,42 @@ type User = { id: string; nama: string };
 const JURUSAN_LIST = ["TKR", "Elind", "TSM", "Akuntansi", "Mesin", "Hotel", "TKI", "Listrik"];
 
 const ITEMS_CONFIG = [
-  { jenis: "SNACK_PAGI",  label: "Snack Pagi" },
-  { jenis: "SNACK_SORE",  label: "Snack Sore" },
-  { jenis: "MAKAN_SIANG", label: "Makan Siang" },
-  { jenis: "KOPI",        label: "Kopi" },
-  { jenis: "AIR_MINERAL", label: "Air Mineral" },
-  { jenis: "DLL",         label: "Dll" },
+  {
+    jenis: "SNACK_PAGI",  label: "Snack Pagi",  icon: Sandwich,
+    bg: "bg-amber-50",    border: "border-amber-300",
+    iconActiveBg: "bg-amber-100", iconActiveColor: "text-amber-600",
+    textColor: "text-amber-700",  checkBg: "bg-amber-500",
+  },
+  {
+    jenis: "SNACK_SORE",  label: "Snack Sore",  icon: Sandwich,
+    bg: "bg-orange-50",   border: "border-orange-300",
+    iconActiveBg: "bg-orange-100", iconActiveColor: "text-orange-600",
+    textColor: "text-orange-700", checkBg: "bg-orange-500",
+  },
+  {
+    jenis: "MAKAN_SIANG", label: "Makan Siang", icon: UtensilsCrossed,
+    bg: "bg-emerald-50",  border: "border-emerald-300",
+    iconActiveBg: "bg-emerald-100", iconActiveColor: "text-emerald-600",
+    textColor: "text-emerald-700", checkBg: "bg-emerald-500",
+  },
+  {
+    jenis: "KOPI",        label: "Kopi",        icon: Coffee,
+    bg: "bg-stone-50",    border: "border-stone-300",
+    iconActiveBg: "bg-stone-100", iconActiveColor: "text-stone-700",
+    textColor: "text-stone-700",  checkBg: "bg-stone-600",
+  },
+  {
+    jenis: "AIR_MINERAL", label: "Air Mineral", icon: Droplets,
+    bg: "bg-blue-50",     border: "border-blue-300",
+    iconActiveBg: "bg-blue-100", iconActiveColor: "text-blue-600",
+    textColor: "text-blue-700",   checkBg: "bg-blue-500",
+  },
+  {
+    jenis: "DLL",         label: "Lainnya",     icon: MoreHorizontal,
+    bg: "bg-purple-50",   border: "border-purple-300",
+    iconActiveBg: "bg-purple-100", iconActiveColor: "text-purple-600",
+    textColor: "text-purple-700", checkBg: "bg-purple-500",
+  },
 ];
 
 type ItemForm = { checked: boolean; qty: string; keterangan: string };
@@ -25,6 +55,24 @@ type ItemForm = { checked: boolean; qty: string; keterangan: string };
 function initItems(): Record<string, ItemForm> {
   return Object.fromEntries(
     ITEMS_CONFIG.map((i) => [i.jenis, { checked: false, qty: "", keterangan: "" }])
+  );
+}
+
+function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return (
+    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+      {children}{required && <span className="text-red-500 ml-0.5">*</span>}
+    </label>
+  );
+}
+
+function FieldError({ msg }: { msg?: string }) {
+  if (!msg) return null;
+  return (
+    <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+      <AlertCircle size={12} className="flex-shrink-0" />
+      {msg}
+    </p>
   );
 }
 
@@ -46,8 +94,17 @@ export default function PermintaanBaruPage() {
   const [catatan,    setCatatan]    = useState("");
   const [items,      setItems]      = useState<Record<string, ItemForm>>(initItems());
 
+  // Autocomplete state
+  const [pemohonQuery,   setPemohonQuery]   = useState("");
+  const [pemohonOpen,    setPemohonOpen]    = useState(false);
+  const [pemohonName,    setPemohonName]    = useState("");
+
   useEffect(() => {
-    if (session?.user?.id && !isAdmin) setPemohonId(session.user.id);
+    if (session?.user?.id && !isAdmin) {
+      setPemohonId(session.user.id);
+      setPemohonName(session.user.name ?? "");
+      setPemohonQuery(session.user.name ?? "");
+    }
   }, [session, isAdmin]);
 
   useEffect(() => {
@@ -66,8 +123,10 @@ export default function PermintaanBaruPage() {
     if (!tanggal)           e.tanggal    = "Tanggal wajib diisi";
     if (!jamMulai)          e.jamMulai   = "Jam mulai wajib diisi";
     if (!jamSelesai)        e.jamSelesai = "Jam selesai wajib diisi";
+    if (jamMulai && jamSelesai && jamSelesai <= jamMulai)
+      e.jamSelesai = "Jam selesai harus lebih besar dari jam mulai";
     if (!ruangan.trim())    e.ruangan    = "Ruangan wajib diisi";
-    if (!pemohonId)         e.pemohonId  = "Pemohon wajib dipilih";
+    if (!pemohonId && isAdmin) e.pemohonId = "Pilih pemohon dari daftar yang muncul";
 
     const checked = ITEMS_CONFIG.filter((c) => items[c.jenis].checked);
     if (checked.length === 0) {
@@ -77,7 +136,7 @@ export default function PermintaanBaruPage() {
         if (!items[c.jenis].qty || Number(items[c.jenis].qty) < 1)
           e[`qty_${c.jenis}`] = `Qty ${c.label} wajib diisi`;
         if (c.jenis === "DLL" && !items[c.jenis].keterangan.trim())
-          e.keterangan_DLL = "Keterangan dll wajib diisi";
+          e.keterangan_DLL = "Keterangan wajib diisi";
       });
     }
     setErrors(e);
@@ -129,169 +188,260 @@ export default function PermintaanBaruPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto">
+    <div className="p-4 md:p-6 max-w-2xl mx-auto">
+
+      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/dashboard" className="btn-secondary p-2"><ArrowLeft size={16} /></Link>
+        <Link href="/dashboard" className="btn-secondary p-2 rounded-xl">
+          <ArrowLeft size={16} />
+        </Link>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Buat Permintaan Baru</h1>
-          <p className="text-sm text-gray-500">Isi form untuk mengajukan permintaan konsumsi</p>
+          <h1 className="text-xl font-bold text-gray-900 tracking-tight">Buat Permintaan</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Isi detail kebutuhan konsumsi acara</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="card p-6 space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
 
-          {/* Nama Acara */}
+        {/* Section: Info Acara */}
+        <div className="card p-5 space-y-4">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Info Acara</p>
+
           <div>
-            <label className="label" htmlFor="namaAcara">Nama Acara <span className="text-red-500">*</span></label>
-            <input id="namaAcara" type="text" placeholder="Contoh: Rapat Koordinasi Bulanan"
+            <FieldLabel required>Nama Acara</FieldLabel>
+            <input type="text" placeholder="Contoh: Rapat Koordinasi Bulanan"
               value={namaAcara}
               onChange={(e) => { setNamaAcara(e.target.value); clearError("namaAcara"); }}
               className={`input-field ${errors.namaAcara ? "error" : ""}`}
             />
-            {errors.namaAcara && <p className="text-red-500 text-xs mt-1">{errors.namaAcara}</p>}
+            <FieldError msg={errors.namaAcara} />
           </div>
 
-          {/* Tanggal */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <FieldLabel required>Jurusan</FieldLabel>
+              <select value={jurusan}
+                onChange={(e) => { setJurusan(e.target.value); clearError("jurusan"); }}
+                className={`input-field ${errors.jurusan ? "error" : ""}`}
+              >
+                <option value="">— Pilih Jurusan —</option>
+                {JURUSAN_LIST.map((j) => <option key={j} value={j}>{j}</option>)}
+              </select>
+              <FieldError msg={errors.jurusan} />
+            </div>
+            <div>
+              <FieldLabel required>Ruangan</FieldLabel>
+              <input type="text" placeholder="Contoh: Aula Utama"
+                value={ruangan}
+                onChange={(e) => { setRuangan(e.target.value); clearError("ruangan"); }}
+                className={`input-field ${errors.ruangan ? "error" : ""}`}
+              />
+              <FieldError msg={errors.ruangan} />
+            </div>
+          </div>
+
           <div>
-            <label className="label" htmlFor="tanggal">Tanggal Dibutuhkan <span className="text-red-500">*</span></label>
-            <input id="tanggal" type="date" value={tanggal}
+            <FieldLabel required>Tanggal</FieldLabel>
+            <input type="date" value={tanggal}
               onChange={(e) => { setTanggal(e.target.value); clearError("tanggal"); }}
               className={`input-field ${errors.tanggal ? "error" : ""}`}
             />
-            {errors.tanggal && <p className="text-red-500 text-xs mt-1">{errors.tanggal}</p>}
+            <FieldError msg={errors.tanggal} />
           </div>
 
-          {/* Jam */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label" htmlFor="jamMulai">Jam Mulai <span className="text-red-500">*</span></label>
-              <input id="jamMulai" type="time" value={jamMulai}
+              <FieldLabel required>Jam Mulai</FieldLabel>
+              <input type="time" value={jamMulai}
                 onChange={(e) => { setJamMulai(e.target.value); clearError("jamMulai"); }}
                 className={`input-field ${errors.jamMulai ? "error" : ""}`}
               />
-              {errors.jamMulai && <p className="text-red-500 text-xs mt-1">{errors.jamMulai}</p>}
+              <FieldError msg={errors.jamMulai} />
             </div>
             <div>
-              <label className="label" htmlFor="jamSelesai">Jam Selesai <span className="text-red-500">*</span></label>
-              <input id="jamSelesai" type="time" value={jamSelesai}
+              <FieldLabel required>Jam Selesai</FieldLabel>
+              <input type="time" value={jamSelesai}
                 onChange={(e) => { setJamSelesai(e.target.value); clearError("jamSelesai"); }}
                 className={`input-field ${errors.jamSelesai ? "error" : ""}`}
               />
-              {errors.jamSelesai && <p className="text-red-500 text-xs mt-1">{errors.jamSelesai}</p>}
+              <FieldError msg={errors.jamSelesai} />
             </div>
           </div>
 
-          {/* Ruangan */}
-          <div>
-            <label className="label" htmlFor="ruangan">Ruangan <span className="text-red-500">*</span></label>
-            <input id="ruangan" type="text" placeholder="Contoh: Aula Utama, Ruang Rapat Lt.2"
-              value={ruangan}
-              onChange={(e) => { setRuangan(e.target.value); clearError("ruangan"); }}
-              className={`input-field ${errors.ruangan ? "error" : ""}`}
-            />
-            {errors.ruangan && <p className="text-red-500 text-xs mt-1">{errors.ruangan}</p>}
-          </div>
-
-          {/* Pemohon */}
-          <div>
-            <label className="label" htmlFor="pemohon">Pemohon <span className="text-red-500">*</span></label>
-            {isAdmin ? (
-              <select id="pemohon" value={pemohonId}
-                onChange={(e) => { setPemohonId(e.target.value); clearError("pemohonId"); }}
-                className={`input-field ${errors.pemohonId ? "error" : ""}`}
-              >
-                <option value="">— Pilih Pemohon —</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>{u.nama}</option>
-                ))}
-              </select>
-            ) : (
-              <input type="text" value={session?.user?.name ?? ""} disabled className="input-field bg-gray-50 text-gray-500" />
-            )}
-            {errors.pemohonId && <p className="text-red-500 text-xs mt-1">{errors.pemohonId}</p>}
-          </div>
-
-          {/* Jurusan */}
-          <div>
-            <label className="label" htmlFor="jurusan">Jurusan <span className="text-red-500">*</span></label>
-            <select id="jurusan" value={jurusan}
-              onChange={(e) => { setJurusan(e.target.value); clearError("jurusan"); }}
-              className={`input-field ${errors.jurusan ? "error" : ""}`}
-            >
-              <option value="">— Pilih Jurusan —</option>
-              {JURUSAN_LIST.map((j) => (
-                <option key={j} value={j}>{j}</option>
-              ))}
-            </select>
-            {errors.jurusan && <p className="text-red-500 text-xs mt-1">{errors.jurusan}</p>}
-          </div>
-
-          {/* Items */}
-          <div>
-            <label className="label">Item Konsumsi <span className="text-red-500">*</span></label>
-            <div className="space-y-2 rounded-lg border border-gray-200 p-4 bg-gray-50">
-              {ITEMS_CONFIG.map((cfg) => {
-                const item = items[cfg.jenis];
-                return (
-                  <div key={cfg.jenis} className="space-y-1.5">
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" id={`check_${cfg.jenis}`} checked={item.checked}
-                        onChange={() => toggleItem(cfg.jenis)}
-                        className="w-4 h-4 accent-blue-700 cursor-pointer flex-shrink-0"
-                      />
-                      <label htmlFor={`check_${cfg.jenis}`}
-                        className={`text-sm flex-1 cursor-pointer select-none ${item.checked ? "text-gray-900 font-medium" : "text-gray-500"}`}
+          {isAdmin && (
+            <div className="relative">
+              <FieldLabel required>Pemohon</FieldLabel>
+              <input
+                type="text"
+                placeholder="Ketik nama pemohon..."
+                value={pemohonQuery}
+                autoComplete="off"
+                onChange={(e) => {
+                  setPemohonQuery(e.target.value);
+                  setPemohonId("");
+                  setPemohonName("");
+                  setPemohonOpen(true);
+                  clearError("pemohonId");
+                }}
+                onFocus={() => setPemohonOpen(true)}
+                onBlur={() => setTimeout(() => setPemohonOpen(false), 150)}
+                className={`input-field ${errors.pemohonId ? "error" : ""} ${pemohonName ? "pr-8" : ""}`}
+              />
+              {/* Clear button */}
+              {pemohonName && (
+                <button
+                  type="button"
+                  onClick={() => { setPemohonQuery(""); setPemohonId(""); setPemohonName(""); }}
+                  className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              )}
+              {/* Dropdown suggestion */}
+              {pemohonOpen && pemohonQuery.length > 0 && (
+                <div className="absolute z-20 mt-1 w-full bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+                  {users
+                    .filter((u) =>
+                      u.nama.toLowerCase().includes(pemohonQuery.toLowerCase())
+                    )
+                    .slice(0, 6)
+                    .map((u) => (
+                      <button
+                        key={u.id}
+                        type="button"
+                        onMouseDown={() => {
+                          setPemohonId(u.id);
+                          setPemohonName(u.nama);
+                          setPemohonQuery(u.nama);
+                          setPemohonOpen(false);
+                          clearError("pemohonId");
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-sm hover:bg-blue-50 transition-colors"
                       >
-                        {cfg.label}
-                      </label>
-                      <div className="w-24">
-                        <input type="number" min={1} placeholder="Qty" value={item.qty}
-                          disabled={!item.checked}
-                          onChange={(e) => {
-                            const v = e.target.value.replace(/\D/g, "");
-                            setItems((p) => ({ ...p, [cfg.jenis]: { ...p[cfg.jenis], qty: v } }));
-                            clearError(`qty_${cfg.jenis}`);
-                          }}
-                          className={`input-field text-center py-1.5 ${!item.checked ? "opacity-40" : ""} ${errors[`qty_${cfg.jenis}`] ? "error" : ""}`}
-                        />
-                      </div>
+                        <div className="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                          {u.nama.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="text-gray-800 font-medium">{u.nama}</span>
+                      </button>
+                    ))
+                  }
+                  {users.filter((u) =>
+                    u.nama.toLowerCase().includes(pemohonQuery.toLowerCase())
+                  ).length === 0 && (
+                    <p className="px-3.5 py-3 text-sm text-gray-400 text-center">
+                      Tidak ada pengguna ditemukan
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* Selected indicator */}
+              {pemohonName && (
+                <p className="text-xs text-emerald-600 mt-1.5 flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {pemohonName} dipilih
+                </p>
+              )}
+              <FieldError msg={errors.pemohonId} />
+            </div>
+          )}
+        </div>
+
+        {/* Section: Item Konsumsi */}
+        <div className="card p-5">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Item Konsumsi</p>
+          <p className="text-xs text-gray-400 mb-4">Pilih dan isi jumlah yang dibutuhkan</p>
+          <FieldError msg={errors.items} />
+
+          <div className="space-y-2">
+            {ITEMS_CONFIG.map((cfg) => {
+              const item = items[cfg.jenis];
+              const Icon = cfg.icon;
+              return (
+                <div
+                  key={cfg.jenis}
+                  className={`rounded-xl border-2 transition-all duration-150 overflow-hidden
+                    ${item.checked
+                      ? `${cfg.bg} ${cfg.border}`
+                      : "bg-white border-gray-100"
+                    }`}
+                >
+                  {/* Toggle row */}
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(cfg.jenis)}
+                    className="w-full flex items-center gap-3 p-3.5 text-left active:scale-[.99]"
+                  >
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors
+                      ${item.checked ? cfg.iconActiveBg : "bg-gray-50"}`}>
+                      <Icon size={18} className={item.checked ? cfg.iconActiveColor : "text-gray-400"} />
                     </div>
-                    {cfg.jenis === "DLL" && item.checked && (
-                      <div className="ml-7">
-                        <input type="text" placeholder="Sebutkan (contoh: Tisu, Sedotan...)"
+                    <span className={`flex-1 text-sm font-semibold transition-colors
+                      ${item.checked ? cfg.textColor : "text-gray-600"}`}>
+                      {cfg.label}
+                    </span>
+                    {/* Checkbox visual */}
+                    <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all
+                      ${item.checked
+                        ? `${cfg.checkBg} border-transparent`
+                        : "border-gray-200 bg-white"
+                      }`}>
+                      {item.checked && (
+                        <svg width="11" height="8" viewBox="0 0 11 8" fill="none">
+                          <path d="M1 4L4 7L10 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Expanded input */}
+                  {item.checked && (
+                    <div className="px-3.5 pb-3.5 space-y-2">
+                      <input
+                        type="number" min={1} placeholder="Jumlah (qty)"
+                        value={item.qty}
+                        onChange={(e) => {
+                          const v = e.target.value.replace(/\D/g, "");
+                          setItems((p) => ({ ...p, [cfg.jenis]: { ...p[cfg.jenis], qty: v } }));
+                          clearError(`qty_${cfg.jenis}`);
+                        }}
+                        className={`input-field ${errors[`qty_${cfg.jenis}`] ? "error" : ""}`}
+                      />
+                      {cfg.jenis === "DLL" && (
+                        <input
+                          type="text" placeholder="Sebutkan (contoh: Tisu, Sedotan...)"
                           value={item.keterangan}
                           onChange={(e) => {
                             setItems((p) => ({ ...p, DLL: { ...p.DLL, keterangan: e.target.value } }));
                             clearError("keterangan_DLL");
                           }}
-                          className={`input-field text-sm ${errors.keterangan_DLL ? "error" : ""}`}
+                          className={`input-field ${errors.keterangan_DLL ? "error" : ""}`}
                         />
-                        {errors.keterangan_DLL && <p className="text-red-500 text-xs mt-1">{errors.keterangan_DLL}</p>}
-                      </div>
-                    )}
-                    {item.checked && errors[`qty_${cfg.jenis}`] && (
-                      <p className="text-red-500 text-xs ml-7">{errors[`qty_${cfg.jenis}`]}</p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            {errors.items && <p className="text-red-500 text-xs mt-1">{errors.items}</p>}
-          </div>
-
-          {/* Catatan */}
-          <div>
-            <label className="label" htmlFor="catatan">Catatan <span className="text-gray-400 font-normal">(opsional)</span></label>
-            <textarea id="catatan" rows={3} placeholder="Tambahkan catatan khusus jika ada..."
-              value={catatan} onChange={(e) => setCatatan(e.target.value)}
-              className="input-field resize-none" maxLength={500}
-            />
-            <p className="text-xs text-gray-400 mt-1 text-right">{catatan.length}/500</p>
+                      )}
+                      <FieldError msg={errors[`qty_${cfg.jenis}`] ?? (cfg.jenis === "DLL" ? errors.keterangan_DLL : undefined)} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-4">
+        {/* Section: Catatan */}
+        <div className="card p-5">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Catatan</p>
+          <textarea rows={3} placeholder="Tambahkan catatan khusus jika ada..."
+            value={catatan} onChange={(e) => setCatatan(e.target.value)}
+            className="input-field resize-none" maxLength={500}
+          />
+          <p className="text-xs text-gray-400 mt-1.5 text-right">{catatan.length}/500</p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3 pt-1 pb-6">
           <Link href="/dashboard" className="btn-secondary">Batal</Link>
           <button type="submit" disabled={loading} className="btn-primary">
             {loading

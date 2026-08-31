@@ -3,6 +3,121 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+// 109 guru unik dari PDF "Data Guru Per Divisi 26 Agustus 2026"
+// username = 2 kata pertama nama, lowercase, spasi → titik
+// password = username
+const GURU: { nama: string; username: string }[] = [
+  { nama: "Abdul Munir",                      username: "abdul.munir" },
+  { nama: "Nuryana Fitriyani",                username: "nuryana.fitriyani" },
+  { nama: "Hidayat Atori",                    username: "hidayat.atori" },
+  { nama: "Elis Rika Sugiarti",               username: "elis.rika" },
+  { nama: "Tini Nurmala",                     username: "tini.nurmala" },
+  { nama: "Putri Purwaningsih",               username: "putri.purwaningsih" },
+  { nama: "Aprilia Rahayu Wilujeng",          username: "aprilia.rahayu" },
+  { nama: "Adhista Cindy Rahmayani",          username: "adhista.cindy" },
+  { nama: "Prasasti Puspasari",               username: "prasasti.puspasari" },
+  { nama: "Maristya Catur Dwi Pratiwi",       username: "maristya.catur" },
+  { nama: "Puspita Sari",                     username: "puspita.sari" },
+  { nama: "Diva Alysha Oktaviany",            username: "diva.alysha" },
+  { nama: "Viany Lingga Revi",                username: "viany.lingga" },
+  { nama: "Dodi Perdana Putra",               username: "dodi.perdana" },
+  { nama: "Diah Maulias Dewi Putri",          username: "diah.maulias" },
+  { nama: "Abdillah Putra Nusa",              username: "abdillah.putra" },
+  { nama: "Anisha Septiana",                  username: "anisha.septiana" },
+  { nama: "Adynda Ray Razika",                username: "adynda.ray" },
+  { nama: "Azzam Izzuddin Ramadhan",          username: "azzam.izzuddin" },
+  { nama: "Dede Rukmayanti",                  username: "dede.rukmayanti" },
+  { nama: "Danu Purwanto",                    username: "danu.purwanto" },
+  { nama: "Maulana Evendi",                   username: "maulana.evendi" },
+  { nama: "Ayu Warestu",                      username: "ayu.warestu" },
+  { nama: "Dwi Fajar Meidiatno",              username: "dwi.fajar" },
+  { nama: "Devin Eldwin",                     username: "devin.eldwin" },
+  { nama: "Okxy Ixganda",                     username: "okxy.ixganda" },
+  { nama: "Muhamad Yudi D. C",               username: "muhamad.yudi" },
+  { nama: "Alifiyah Az-Zahra",               username: "alifiyah.azzahra" },
+  { nama: "Feri Hapsara",                     username: "feri.hapsara" },
+  { nama: "Berti Effira Fatahan",             username: "berti.effira" },
+  { nama: "Ambar Tri Laksono",               username: "ambar.tri" },
+  { nama: "Haya Suhaela",                     username: "haya.suhaela" },
+  { nama: "Tri Lestari",                      username: "tri.lestari" },
+  { nama: "Moh. Aldy Akbar Supriyadi",       username: "aldy.akbar" },
+  { nama: "Joice Engie Wella Sianipar",       username: "joice.engie" },
+  { nama: "Ryo Maytana",                      username: "ryo.maytana" },
+  { nama: "Amalia Dewi Lestari",              username: "amalia.dewi" },
+  { nama: "Heas Priyo Wicaksono",             username: "heas.priyo" },
+  { nama: "Tiara Kusuma Dewi",               username: "tiara.kusuma" },
+  { nama: "Fuji Sampan Sudjana",             username: "fuji.sampan" },
+  { nama: "Nida Apriliatul Hasanah",         username: "nida.apriliatul" },
+  { nama: "Heri Suprianto",                  username: "heri.suprianto" },
+  { nama: "Aula Al Layali",                  username: "aula.allayali" },
+  { nama: "Ahmad Nasrul Sidik",              username: "ahmad.nasrul" },
+  { nama: "Tidtaya Puteri Larasanty",        username: "tidtaya.puteri" },
+  { nama: "Fadli Maulana",                   username: "fadli.maulana" },
+  { nama: "Ressa Hadi Purwoko",              username: "ressa.hadi" },
+  { nama: "Astri Afmi Wulandari",            username: "astri.afmi" },
+  { nama: "Esa Apriyadi",                    username: "esa.apriyadi" },
+  { nama: "Septiawan Filtra Santosa",        username: "septiawan.filtra" },
+  { nama: "M. Hafidz Ghufron",               username: "hafidz.ghufron" },
+  { nama: "Munandar",                        username: "munandar" },
+  { nama: "Heru Triatmo",                    username: "heru.triatmo" },
+  { nama: "Fadly Narendra Uttomo",           username: "fadly.narendra" },
+  { nama: "Dikky Apri Setia Nugraha",        username: "dikky.apri" },
+  { nama: "Azhari Budirianto",               username: "azhari.budirianto" },
+  { nama: "Maharani Benedicta Azarine Piljai", username: "maharani.benedicta" },
+  { nama: "Kiki Widhia Swara",               username: "kiki.widhia" },
+  { nama: "Nanda Diansyah Dwi",             username: "nanda.diansyah" },
+  { nama: "Ahmad Suhaimi",                   username: "ahmad.suhaimi" },
+  { nama: "Gesti Khoirunnisa",               username: "gesti.khoirunnisa" },
+  { nama: "Retno Dwi Astuti",                username: "retno.dwi" },
+  { nama: "Refty Royan J",                   username: "refty.royan" },
+  { nama: "Syaifulloh",                      username: "syaifulloh" },
+  { nama: "Intan Chaya Nintyas",             username: "intan.chaya" },
+  { nama: "Nurmayanti",                      username: "nurmayanti" },
+  { nama: "Nia Desnata Hati",                username: "nia.desnata" },
+  { nama: "Muhamad Iqbal",                   username: "muhamad.iqbal" },
+  { nama: "Tri Sulistyaningsih",             username: "tri.sulistyaningsih" },
+  { nama: "Serli Aprodita",                  username: "serli.aprodita" },
+  { nama: "Putri Nur Azizah",               username: "putri.nur" },
+  { nama: "Novita Hani R",                   username: "novita.hani" },
+  { nama: "Rahmat Hidayat",                  username: "rahmat.hidayat" },
+  { nama: "Yanda Eko Putra",                 username: "yanda.eko" },
+  { nama: "Raihan Hakim",                    username: "raihan.hakim" },
+  { nama: "Mochammad Deden Nuriyana",        username: "mochammad.deden" },
+  { nama: "Pandu Andariansyah",              username: "pandu.andariansyah" },
+  { nama: "Eldha Luvy Zha",                  username: "eldha.luvy" },
+  { nama: "Yuda Putra Utama",               username: "yuda.putra" },
+  { nama: "Trisno Ngestuti",                 username: "trisno.ngestuti" },
+  { nama: "Muhamad Hafidz Firdaus P",        username: "muhamad.hafidz" },
+  { nama: "Ditta Octaviani",                 username: "ditta.octaviani" },
+  { nama: "Enggar Fata",                     username: "enggar.fata" },
+  { nama: "Bagus Indra Permana",             username: "bagus.indra" },
+  { nama: "Abdul Haris Safa'adi",            username: "abdul.haris" },
+  { nama: "Cecep Bermana Sakti Gumilar",     username: "cecep.bermana" },
+  { nama: "Iwan Sutiawan",                   username: "iwan.sutiawan" },
+  { nama: "Umarrudin",                       username: "umarrudin" },
+  { nama: "Purnomo",                         username: "purnomo" },
+  { nama: "Noval Al Mahdy",                  username: "noval.almahdy" },
+  { nama: "Arya Yudha Satriatama",           username: "arya.yudha" },
+  { nama: "Anggi Apriansyah",               username: "anggi.apriansyah" },
+  { nama: "Isroni",                          username: "isroni" },
+  { nama: "Sultan Saladdin",                 username: "sultan.saladdin" },
+  { nama: "Muhammad Al Ihsan",              username: "muhammad.alihsan" },
+  { nama: "Ah Dafiq Najiyullah",             username: "dafiq.najiyullah" },
+  { nama: "Istiqomah",                       username: "istiqomah" },
+  { nama: "Dwi Nugroho",                     username: "dwi.nugroho" },
+  { nama: "Muhammad Teguh Supriyatin",       username: "muhammad.teguh" },
+  { nama: "Sukma Dwiaugita Rahardjo",        username: "sukma.dwiaugita" },
+  { nama: "Joko Setyo Nugroho",              username: "joko.setyo" },
+  { nama: "Diana Cholida",                   username: "diana.cholida" },
+  { nama: "Ridwan",                          username: "ridwan" },
+  { nama: "Hanifah Novianty",               username: "hanifah.novianty" },
+  { nama: "Salsa Fathia Azhar",              username: "salsa.fathia" },
+  { nama: "Syafrudin",                       username: "syafrudin" },
+  { nama: "Fernanda Retna Ningtyas",         username: "fernanda.retna" },
+  { nama: "Sonza Rahmanirwana Fushshilat",   username: "sonza.rahmanirwana" },
+  { nama: "Rany Haerunnysa",                username: "rany.haerunnysa" },
+];
+
 async function main() {
   console.log("🌱 Seeding database...");
 
@@ -10,30 +125,35 @@ async function main() {
   await prisma.permintaan.deleteMany();
   await prisma.user.deleteMany();
 
+  // ── Admin & Approver ──────────────────────────────────────────────────────
   const adminPassword    = await bcrypt.hash("admin123", 10);
   const approverPassword = await bcrypt.hash("approver123", 10);
-  const staffPassword    = await bcrypt.hash("staff123", 10);
 
   const admin = await prisma.user.create({
-    data: { nama: "Ahmad Fauzi", role: "ADMIN", password: adminPassword },
+    data: { username: "admin",    nama: "Ahmad Fauzi",   role: "ADMIN",    password: adminPassword },
   });
 
   await prisma.user.create({
-    data: { nama: "Rina Apriyanti", role: "APPROVER", password: approverPassword },
+    data: { username: "approver", nama: "Rina Apriyanti", role: "APPROVER", password: approverPassword },
   });
 
-  const staff1 = await prisma.user.create({
-    data: { nama: "Siti Rahayu", role: "STAFF", password: staffPassword },
-  });
+  // ── 109 Guru (STAFF) ─────────────────────────────────────────────────────
+  console.log(`📚 Memasukkan ${GURU.length} guru...`);
 
-  const staff2 = await prisma.user.create({
-    data: { nama: "Budi Santoso", role: "STAFF", password: staffPassword },
-  });
+  const staffUsers = await Promise.all(
+    GURU.map(async ({ nama, username }) => {
+      const hashed = await bcrypt.hash(username, 10);
+      return prisma.user.create({
+        data: { username, nama, role: "STAFF", password: hashed },
+      });
+    })
+  );
 
-  const staff3 = await prisma.user.create({
-    data: { nama: "Dewi Lestari", role: "STAFF", password: staffPassword },
-  });
+  const staff1 = staffUsers[0]; // Abdul Munir
+  const staff2 = staffUsers[1]; // Nuryana Fitriyani
+  const staff3 = staffUsers[2]; // Hidayat Atori
 
+  // ── Contoh Permintaan ─────────────────────────────────────────────────────
   await prisma.permintaan.create({
     data: {
       namaAcara: "Rapat Koordinasi Bulanan",
@@ -143,11 +263,9 @@ async function main() {
   console.log("✅ Seed selesai!");
   console.log("");
   console.log("📋 Akun login:");
-  console.log("   Admin    → nama: Ahmad Fauzi     | password: admin123");
-  console.log("   Approver → nama: Rina Apriyanti  | password: approver123");
-  console.log("   Staff    → nama: Siti Rahayu     | password: staff123");
-  console.log("   Staff    → nama: Budi Santoso    | password: staff123");
-  console.log("   Staff    → nama: Dewi Lestari    | password: staff123");
+  console.log("   Admin    → username: admin     | password: admin123");
+  console.log("   Approver → username: approver  | password: approver123");
+  console.log(`   Staff    → ${GURU.length} guru, username = nama (contoh: abdul.munir), password = username`);
 }
 
 main()
