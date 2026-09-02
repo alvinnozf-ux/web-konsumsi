@@ -66,7 +66,11 @@
 - ✅ **Dashboard greeting** — dari nama doang jadi `"Selamat pagi/siang/sore, [Nama]"` + subtitle role
 - ✅ **Greeting logic** — IIFE di JSX diganti `getGreeting()` function + `firstName` variable di luar render
 
-### Fitur Baru (31 Agustus 2026 — sesi ke-4)
+### Perbaikan Username & Database (2 September 2026)
+- ✅ **Username disederhanakan** — dari format `nama.depan.belakang` jadi nama depan aja (contoh: `nuryana`, `hidayat`)
+- ✅ **Duplikat ditangani** — nama depan sama → tambah huruf pertama nama ke-2 (contoh: `abdulm`, `abdulh`)
+- ✅ **Nama singkatan difix manual** — `M. Hafidz` → `hafidz`, `Moh. Aldy` → `aldy`, `Ah Dafiq` → `dafiq`
+- ✅ **Password = username** — semua staff password sama dengan username masing-masing
 - ✅ **Logo diupdate** — logo lama diganti 2 logo bulat (MM2100 + 03) di login page, sidebar, dan print header
 - ✅ **Field pemohon autocomplete** — Admin bisa ketik nama pemohon, muncul suggestion dari daftar user, pilih → `pemohonId` terisi otomatis. Berlaku di form buat dan edit permintaan.
 - ✅ **Username system** — field `username` ditambah ke tabel `User`. Login sekarang pakai username bukan nama. Nama lengkap tetap tampil sebagai display name.
@@ -123,11 +127,20 @@ http://<IP-laptop>:3000
 username: admin       → password: admin123     (ADMIN)
 username: approver    → password: approver123  (APPROVER)
 
-109 guru (STAFF):
-username: abdul.munir         → password: abdul.munir
-username: nuryana.fitriyani   → password: nuryana.fitriyani
-username: hidayat.atori       → password: hidayat.atori
-... dst (username = 2 kata pertama nama, lowercase, spasi → titik)
+108 guru (STAFF) — username & password = nama depan lowercase:
+username: nuryana     → password: nuryana      (Nuryana Fitriyani)
+username: hidayat     → password: hidayat      (Hidayat Atori)
+username: abdulm      → password: abdulm       (Abdul Munir)       ← duplikat: + huruf nama ke-2
+username: muhammada   → password: muhammada    (Muhammad Al Ihsan) ← duplikat: + huruf nama ke-2
+username: hafidz      → password: hafidz       (M. Hafidz Ghufron) ← manual fix
+username: aldy        → password: aldy         (Moh. Aldy Akbar)   ← manual fix
+username: dafiq       → password: dafiq        (Ah Dafiq Najiyullah) ← manual fix
+... dst
+
+Pola umum:
+- Nama depan unik  → username = nama depan (contoh: nuryana, hidayat, danu)
+- Nama depan sama  → username = nama depan + huruf pertama nama ke-2 (contoh: abdulm, abdulh)
+- Nama depan singkatan (M., Moh., Ah) → pakai nama asli ke-2
 ```
 
 ---
