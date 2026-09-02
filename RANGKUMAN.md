@@ -66,16 +66,15 @@
 - ✅ **Dashboard greeting** — dari nama doang jadi `"Selamat pagi/siang/sore, [Nama]"` + subtitle role
 - ✅ **Greeting logic** — IIFE di JSX diganti `getGreeting()` function + `firstName` variable di luar render
 
-### Perbaikan Username & Database (2 September 2026)
-- ✅ **Username disederhanakan** — dari format `nama.depan.belakang` jadi nama depan aja (contoh: `nuryana`, `hidayat`)
+### Perbaikan Username & Email (2 September 2026)
+- ✅ **Histori dihapus** — semua data permintaan & item konsumsi dibersihkan (fresh start)
+- ✅ **Field `email` ditambah** ke tabel User di schema Prisma
+- ✅ **Username disederhanakan** — jadi nama depan lowercase (contoh: `nuryana`, `hidayat`)
 - ✅ **Duplikat ditangani** — nama depan sama → tambah huruf pertama nama ke-2 (contoh: `abdulm`, `abdulh`)
 - ✅ **Nama singkatan difix manual** — `M. Hafidz` → `hafidz`, `Moh. Aldy` → `aldy`, `Ah Dafiq` → `dafiq`
 - ✅ **Password = username** — semua staff password sama dengan username masing-masing
-- ✅ **Logo diupdate** — logo lama diganti 2 logo bulat (MM2100 + 03) di login page, sidebar, dan print header
-- ✅ **Field pemohon autocomplete** — Admin bisa ketik nama pemohon, muncul suggestion dari daftar user, pilih → `pemohonId` terisi otomatis. Berlaku di form buat dan edit permintaan.
-- ✅ **Username system** — field `username` ditambah ke tabel `User`. Login sekarang pakai username bukan nama. Nama lengkap tetap tampil sebagai display name.
-- ✅ **109 guru di-seed** — dari file "Data Guru Per Divisi 26 Agustus 2026.pdf", semua nama unik dimasukkan sebagai STAFF. Username = 2 kata pertama nama lowercase (contoh: `abdul.munir`), password = username.
-- ✅ **Users page** — kolom username ditambahkan di tabel, form tambah/edit user sekarang ada field username
+- ✅ **Email 11 user diisi** — Aprilia, Abdul Munir, Elis, Hidayat, Puspita, Munandar, Refty, Intan, Diah, Danu, Putri Purwaningsih
+- ⏳ **Notif email hasil** — kirim ke pemohon saat disetujui/ditolak (mailer sudah ditulis, API & UI belum selesai disambung)
 
 ### Perbaikan & Fitur Baru (31 Agustus 2026 — sesi ke-5)
 - ✅ **Fix login error state** — validasi per-field (kosong) dipisah dari error kredensial salah. Field tidak merah saat salah login.
@@ -223,7 +222,7 @@ konsumsi-app/
 ## Database Schema
 
 ```
-User          → id, username, nama, role, password
+User          → id, username, nama, role, password, email (opsional)
 Permintaan    → id, namaAcara, jurusan, tanggal, jamMulai, jamSelesai,
                 ruangan, status, alasanTolak, catatan, pemohonId
 ItemKonsumsi  → id, jenis, qty, keterangan, permintaanId
@@ -241,12 +240,11 @@ ItemKonsumsi  → id, jenis, qty, keterangan, permintaanId
 
 ## Yang Belum / Rencana
 
-- ✅ **Notifikasi email** — sudah jalan via Nodemailer + Gmail (`alvinnozf@gmail.com` → `alvinozefanyaa@gmail.com`)
-  - Nanti ganti ke email khusus SiPeKon kalau sudah dibuat
-  - Approver bisa ditambah sampai 3 email (pisah koma di `APPROVER_EMAIL`)
+- ✅ **Notifikasi email ke Approver** — sudah jalan, ada link langsung ke halaman persetujuan
+- ⏳ **Notifikasi email ke Pemohon** — kirim email hasil (disetujui/ditolak) ke email pemohon. Mailer sudah ditulis, tinggal sambung ke API PATCH + Users page UI
 - ✅ **Push ke GitHub** — https://github.com/alvinnozf-ux/web-konsumsi
 - ✅ **Deploy ke Vercel** — https://konsumsi-app.vercel.app (bisa diakses siapa saja, tanpa laptop nyala)
 
 ---
 
-*Terakhir diperbarui: 31 Agustus 2026*
+*Terakhir diperbarui: 2 September 2026*
