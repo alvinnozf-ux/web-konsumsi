@@ -103,6 +103,7 @@ export async function POST(req: NextRequest) {
 
   // Kirim notif email ke Approver (fire-and-forget, gagal tidak ganggu response)
   sendPermintaanNotif({
+    id: permintaan.id,
     namaAcara,
     namaPemohon: permintaan.pemohon.nama,
     jurusan,

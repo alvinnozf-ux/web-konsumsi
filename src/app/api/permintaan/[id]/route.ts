@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { sendApprovalNotifToAdmins } from "@/lib/mailer";
 
 const JURUSAN_LIST = ["TKR", "Elind", "TSM", "Akuntansi", "Mesin", "Hotel", "TKI", "Listrik"] as const;
 
@@ -98,6 +99,22 @@ export async function PATCH(
       items: true,
     },
   });
+
+  // Kirim notifikasi email ke semua admin & approver saat DISETUJUI
+  if (status === "DISETUJUI") {
+    sendApprovalNotifToAdmins({
+      id: permintaan.id,
+      namaAcara: permintaan.namaAcara,
+      namaPemohon: permintaan.pemohon.nama,
+      jurusan: permintaan.jurusan,
+      tanggal: permintaan.tanggal.toISOString(),
+      jamMulai: permintaan.jamMulai,
+      jamSelesai: permintaan.jamSelesai,
+      ruangan: permintaan.ruangan,
+    }).catch((err) =>
+      console.error("[mailer] Gagal kirim notif approval:", err)
+    );
+  }
 
   return NextResponse.json(permintaan);
 }
