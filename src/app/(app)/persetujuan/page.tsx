@@ -15,6 +15,7 @@ import { JENIS_LABEL, JENIS_COLOR } from "@/lib/constants";
 type Permintaan = {
   id: string;
   namaAcara: string;
+  kampus: string;
   tanggal: string;
   jamMulai: string;
   jamSelesai: string;
@@ -186,6 +187,7 @@ export default function PersetujuanPage() {
                     <th className="table-th">Tanggal &amp; Jam</th>
                     <th className="table-th">Ruangan</th>
                     <th className="table-th">Pemohon</th>
+                    <th className="table-th">Kampus</th>
                     <th className="table-th">Konsumsi</th>
                     <th className="table-th">Diajukan</th>
                     <th className="table-th text-center">Aksi</th>
@@ -210,6 +212,11 @@ export default function PersetujuanPage() {
                       <td className="table-td text-sm text-gray-600">{p.ruangan}</td>
                       <td className="table-td">
                         <p className="text-sm font-medium text-gray-800">{p.pemohon.nama}</p>
+                      </td>
+                      <td className="table-td">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+                          {p.kampus}
+                        </span>
                       </td>
                       <td className="table-td">
                         <div className="flex flex-wrap gap-1 max-w-[200px]">
@@ -268,7 +275,7 @@ export default function PersetujuanPage() {
               <div key={p.id} className="card p-4 space-y-3">
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">{p.namaAcara}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{p.pemohon.nama}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{p.pemohon.nama} · {p.kampus}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">

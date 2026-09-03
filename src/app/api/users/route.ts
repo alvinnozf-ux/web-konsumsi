@@ -11,6 +11,7 @@ const createUserSchema = z.object({
   nama:     z.string().min(2, "Nama minimal 2 karakter").max(100),
   role:     z.enum(["ADMIN", "STAFF", "APPROVER"]),
   password: z.string().min(6, "Password minimal 6 karakter"),
+  email:    z.string().email("Format email tidak valid").optional().or(z.literal("")),
 });
 
 export async function GET() {
@@ -24,6 +25,7 @@ export async function GET() {
       username: true,
       nama: true,
       role: true,
+      email: true,
       createdAt: true,
       _count: { select: { permintaan: true } },
     },
@@ -47,7 +49,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { username, nama, role, password } = result.data;
+  const { username, nama, role, password, email } = result.data;
 
   const existing = await prisma.user.findUnique({ where: { username } });
   if (existing) {
@@ -56,8 +58,8 @@ export async function POST(req: NextRequest) {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
-    data: { username, nama, role, password: hashedPassword },
-    select: { id: true, username: true, nama: true, role: true, createdAt: true },
+    data: { username, nama, role, password: hashedPassword, email: email || null },
+    select: { id: true, username: true, nama: true, role: true, email: true, createdAt: true },
   });
 
   return NextResponse.json(user, { status: 201 });

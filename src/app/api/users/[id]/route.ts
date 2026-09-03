@@ -10,6 +10,7 @@ const updateUserSchema = z.object({
   nama:     z.string().min(2).max(100).optional(),
   role:     z.enum(["ADMIN", "STAFF", "APPROVER"]).optional(),
   password: z.string().min(6).optional(),
+  email:    z.string().email().optional().or(z.literal("")),
 });
 
 export async function GET(
@@ -43,10 +44,11 @@ export async function PATCH(
     return NextResponse.json({ error: "Validasi gagal", details: result.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const { password, username, ...rest } = result.data;
+  const { password, username, email, ...rest } = result.data;
   const updateData: Record<string, unknown> = { ...rest };
 
   if (password) updateData.password = await bcrypt.hash(password, 10);
+  if (email !== undefined) updateData.email = email || null;
 
   if (username) {
     const existing = await prisma.user.findFirst({
@@ -61,7 +63,7 @@ export async function PATCH(
   const user = await prisma.user.update({
     where: { id: params.id },
     data: updateData,
-    select: { id: true, username: true, nama: true, role: true, createdAt: true },
+    select: { id: true, username: true, nama: true, role: true, email: true, createdAt: true },
   });
 
   return NextResponse.json(user);

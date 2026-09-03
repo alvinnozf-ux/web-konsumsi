@@ -74,7 +74,13 @@
 - ✅ **Nama singkatan difix manual** — `M. Hafidz` → `hafidz`, `Moh. Aldy` → `aldy`, `Ah Dafiq` → `dafiq`
 - ✅ **Password = username** — semua staff password sama dengan username masing-masing
 - ✅ **Email 11 user diisi** — Aprilia, Abdul Munir, Elis, Hidayat, Puspita, Munandar, Refty, Intan, Diah, Danu, Putri Purwaningsih
-- ⏳ **Notif email hasil** — kirim ke pemohon saat disetujui/ditolak (mailer sudah ditulis, API & UI belum selesai disambung)
+
+### Notifikasi Email Approval (3 September 2026)
+- ✅ **Notif email saat DISETUJUI** — saat approver menyetujui permintaan, email otomatis terkirim ke 11 alamat tetap (admin MM2100, admin 03, dan penerima notif)
+- ✅ **Daftar penerima hardcoded** di `APPROVAL_NOTIF_EMAILS` di `mailer.ts`: Aprilia, A Munir, Elis, Hidayat, Puspita, Munandar, Putri Purwaningsih, Danu Purwanto, Refty, Intan, Diah
+- ✅ **Tidak ada notif saat DITOLAK** — hanya DISETUJUI yang trigger email
+- ✅ **Fire-and-forget** — gagal kirim email tidak ganggu response API (pakai `.catch()`)
+- ✅ **Isi email** — badge ✓ Disetujui, detail permintaan (acara, pemohon, jurusan, tanggal, waktu, ruangan), tombol link ke detail permintaan
 
 ### Perbaikan & Fitur Baru (31 Agustus 2026 — sesi ke-5)
 - ✅ **Fix login error state** — validasi per-field (kosong) dipisah dari error kredensial salah. Field tidak merah saat salah login.
@@ -241,10 +247,10 @@ ItemKonsumsi  → id, jenis, qty, keterangan, permintaanId
 ## Yang Belum / Rencana
 
 - ✅ **Notifikasi email ke Approver** — sudah jalan, ada link langsung ke halaman persetujuan
-- ⏳ **Notifikasi email ke Pemohon** — kirim email hasil (disetujui/ditolak) ke email pemohon. Mailer sudah ditulis, tinggal sambung ke API PATCH + Users page UI
+- ✅ **Notifikasi email saat DISETUJUI** — email otomatis ke 11 admin & approver tetap (MM2100 + 03) saat permintaan di-approve
 - ✅ **Push ke GitHub** — https://github.com/alvinnozf-ux/web-konsumsi
 - ✅ **Deploy ke Vercel** — https://konsumsi-app.vercel.app (bisa diakses siapa saja, tanpa laptop nyala)
 
 ---
 
-*Terakhir diperbarui: 2 September 2026*
+*Terakhir diperbarui: 3 September 2026*
