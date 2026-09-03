@@ -53,7 +53,7 @@ function detailTable(rows: { label: string; value: string }[]) {
  * Penerima notif saat permintaan baru masuk (PENDING), dibagi per kampus.
  */
 const PENDING_NOTIF_EMAILS: Record<string, string[]> = {
-  MM2100: ["alvinozefanyaa@gmail.com"],
+  MM2100: ["kikiro234q@gmail.com"],
   "03":   ["alvinozefanyaa@gmail.com"],
 };
 
@@ -134,7 +134,7 @@ export async function sendPermintaanNotif({
  */
 const APPROVAL_NOTIF_EMAILS: Record<string, string[]> = {
   MM2100: ["bwrkiro@gmail.com"],
-  "03":   ["bwrkiro@gmail.com"],
+  "03":   ["alvnozeff23@gmail.com"],
 };
 
 /**
