@@ -53,18 +53,8 @@ function detailTable(rows: { label: string; value: string }[]) {
  * Penerima notif saat permintaan baru masuk (PENDING), dibagi per kampus.
  */
 const PENDING_NOTIF_EMAILS: Record<string, string[]> = {
-  MM2100: [
-    "aprilia.rahayu@smkind-mm2100.sch.id",
-    "a.munir@smkind-mm2100.sch.id",
-    "elisrikasugiarti@smkind-mm2100.sch.id",
-    "hidayat.atori@smkind-mm2100.sch.id",
-    "puspitasari@smkind-mm2100.sch.id",
-    "munandar@smkind-mm2100.sch.id",
-  ],
-  "03": [
-    "putripurwaningsih@smkind-mm2100.sch.id",
-    "danupurwanto@smkind-mm2100.sch.id",
-  ],
+  MM2100: ["alvinozefanyaa@gmail.com"],
+  "03":   ["alvinozefanyaa@gmail.com"],
 };
 
 /**
@@ -143,14 +133,8 @@ export async function sendPermintaanNotif({
  * Penerima notif saat permintaan DISETUJUI, dibagi per kampus.
  */
 const APPROVAL_NOTIF_EMAILS: Record<string, string[]> = {
-  MM2100: [
-    "reftyroyanjuniarti@smkind-mm2100.sch.id",
-    "salsafatia@smkind-mm2100.sch.id",
-  ],
-  "03": [
-    "diahmaulias@smkind-mm2100.sch.id",
-    "intanchaya@smkind-mm2100.sch.id",
-  ],
+  MM2100: ["bwrkiro@gmail.com"],
+  "03":   ["bwrkiro@gmail.com"],
 };
 
 /**
