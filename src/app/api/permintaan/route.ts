@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
     jamMulai,
     jamSelesai,
     ruangan,
-  });
+  }).catch((err) => console.error("[mailer] Gagal kirim notif permintaan baru:", err));
 
   return NextResponse.json(permintaan, { status: 201 });
 }
