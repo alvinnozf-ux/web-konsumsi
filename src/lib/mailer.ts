@@ -50,28 +50,33 @@ function detailTable(rows: { label: string; value: string }[]) {
 }
 
 /**
- * Penerima notif saat permintaan baru masuk (PENDING).
- * Admin MM2100 + Admin 03 — yang perlu tahu ada pengajuan masuk.
+ * Penerima notif saat permintaan baru masuk (PENDING), dibagi per kampus.
  */
-const PENDING_NOTIF_EMAILS = [
-  "aprilia.rahayu@smkind-mm2100.sch.id",
-  "a.munir@smkind-mm2100.sch.id",
-  "elisrikasugiarti@smkind-mm2100.sch.id",
-  "hidayat.atori@smkind-mm2100.sch.id",
-  "puspitasari@smkind-mm2100.sch.id",
-  "munandar@smkind-mm2100.sch.id",
-  "putripurwaningsih@smkind-mm2100.sch.id",
-  "danupurwanto@smkind-mm2100.sch.id",
-];
+const PENDING_NOTIF_EMAILS: Record<string, string[]> = {
+  MM2100: [
+    "aprilia.rahayu@smkind-mm2100.sch.id",
+    "a.munir@smkind-mm2100.sch.id",
+    "elisrikasugiarti@smkind-mm2100.sch.id",
+    "hidayat.atori@smkind-mm2100.sch.id",
+    "puspitasari@smkind-mm2100.sch.id",
+    "munandar@smkind-mm2100.sch.id",
+  ],
+  "03": [
+    "putripurwaningsih@smkind-mm2100.sch.id",
+    "danupurwanto@smkind-mm2100.sch.id",
+  ],
+};
 
 /**
  * Kirim notifikasi email saat ada permintaan baru masuk (+ link langsung ke halaman persetujuan).
+ * Hanya dikirim ke admin kampus yang sesuai.
  */
 export async function sendPermintaanNotif({
   id,
   namaAcara,
   namaPemohon,
   jurusan,
+  kampus,
   tanggal,
   jamMulai,
   jamSelesai,
@@ -81,13 +86,15 @@ export async function sendPermintaanNotif({
   namaAcara: string;
   namaPemohon: string;
   jurusan: string;
+  kampus: string;
   tanggal: string;
   jamMulai: string;
   jamSelesai: string;
   ruangan: string;
 }) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
-  const to = PENDING_NOTIF_EMAILS.join(", ");
+  const recipients = PENDING_NOTIF_EMAILS[kampus] ?? PENDING_NOTIF_EMAILS["MM2100"];
+  const to = recipients.join(", ");
 
   const linkPersetujuan = `${APP_URL}/persetujuan`;
 
@@ -99,6 +106,7 @@ export async function sendPermintaanNotif({
       { label: "Nama Acara", value: namaAcara },
       { label: "Pemohon", value: namaPemohon },
       { label: "Jurusan", value: jurusan },
+      { label: "Kampus", value: `SMK Mitra Industri ${kampus}` },
       { label: "Tanggal", value: formatTanggal(tanggal) },
       { label: "Waktu", value: `${jamMulai} – ${jamSelesai} WIB` },
       { label: "Ruangan", value: ruangan },
@@ -132,24 +140,28 @@ export async function sendPermintaanNotif({
 }
 
 /**
- * Penerima notif saat permintaan DISETUJUI.
- * Hanya 3 orang ini yang perlu tahu hasil approval.
+ * Penerima notif saat permintaan DISETUJUI, dibagi per kampus.
  */
-const APPROVAL_NOTIF_EMAILS = [
-  "reftyroyanjuniarti@smkind-mm2100.sch.id",
-  "intanchaya@smkind-mm2100.sch.id",
-  "diahmaulias@smkind-mm2100.sch.id",
-  "salsafatia@smkind-mm2100.sch.id",
-];
+const APPROVAL_NOTIF_EMAILS: Record<string, string[]> = {
+  MM2100: [
+    "reftyroyanjuniarti@smkind-mm2100.sch.id",
+    "salsafatia@smkind-mm2100.sch.id",
+  ],
+  "03": [
+    "diahmaulias@smkind-mm2100.sch.id",
+    "intanchaya@smkind-mm2100.sch.id",
+  ],
+};
 
 /**
- * Kirim notifikasi ke seluruh admin & approver saat permintaan DISETUJUI.
+ * Kirim notifikasi ke admin kampus yang sesuai saat permintaan DISETUJUI.
  */
 export async function sendApprovalNotifToAdmins({
   id,
   namaAcara,
   namaPemohon,
   jurusan,
+  kampus,
   tanggal,
   jamMulai,
   jamSelesai,
@@ -159,12 +171,14 @@ export async function sendApprovalNotifToAdmins({
   namaAcara: string;
   namaPemohon: string;
   jurusan: string;
+  kampus: string;
   tanggal: string;
   jamMulai: string;
   jamSelesai: string;
   ruangan: string;
 }) {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return;
+  const recipients = APPROVAL_NOTIF_EMAILS[kampus] ?? APPROVAL_NOTIF_EMAILS["MM2100"];
 
   const linkDetail = `${APP_URL}/permintaan/${id}`;
 
@@ -179,6 +193,7 @@ export async function sendApprovalNotifToAdmins({
       { label: "Nama Acara", value: namaAcara },
       { label: "Pemohon",    value: namaPemohon },
       { label: "Jurusan",    value: jurusan },
+      { label: "Kampus",     value: `SMK Mitra Industri ${kampus}` },
       { label: "Tanggal",    value: formatTanggal(tanggal) },
       { label: "Waktu",      value: `${jamMulai} – ${jamSelesai} WIB` },
       { label: "Ruangan",    value: ruangan },
@@ -200,7 +215,7 @@ export async function sendApprovalNotifToAdmins({
   try {
     await transporter.sendMail({
       from: `"SiPeKon 🍱" <${process.env.GMAIL_USER}>`,
-      to: APPROVAL_NOTIF_EMAILS.join(", "),
+      to: recipients.join(", "),
       subject: `[SiPeKon] Permintaan Disetujui: ${namaAcara}`,
       html: emailWrapper(
         "linear-gradient(135deg, #065f46 0%, #047857 100%)",

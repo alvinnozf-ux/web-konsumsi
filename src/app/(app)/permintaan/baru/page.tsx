@@ -86,6 +86,7 @@ export default function PermintaanBaruPage() {
   const [errors,     setErrors]     = useState<Record<string, string>>({});
   const [namaAcara,  setNamaAcara]  = useState("");
   const [jurusan,    setJurusan]    = useState("");
+  const [kampus,     setKampus]     = useState("MM2100");
   const [tanggal,    setTanggal]    = useState("");
   const [jamMulai,   setJamMulai]   = useState("08:00");
   const [jamSelesai, setJamSelesai] = useState("10:00");
@@ -150,6 +151,7 @@ export default function PermintaanBaruPage() {
     const payload = {
       namaAcara: namaAcara.trim(),
       jurusan,
+      kampus,
       tanggal, jamMulai, jamSelesai,
       ruangan: ruangan.trim(),
       pemohonId,
@@ -230,14 +232,25 @@ export default function PermintaanBaruPage() {
               <FieldError msg={errors.jurusan} />
             </div>
             <div>
-              <FieldLabel required>Ruangan</FieldLabel>
-              <input type="text" placeholder="Contoh: Aula Utama"
-                value={ruangan}
-                onChange={(e) => { setRuangan(e.target.value); clearError("ruangan"); }}
-                className={`input-field ${errors.ruangan ? "error" : ""}`}
-              />
-              <FieldError msg={errors.ruangan} />
+              <FieldLabel required>Kampus</FieldLabel>
+              <select value={kampus}
+                onChange={(e) => setKampus(e.target.value)}
+                className="input-field"
+              >
+                <option value="MM2100">SMK Mitra Industri MM2100</option>
+                <option value="03">SMK Mitra Industri 03</option>
+              </select>
             </div>
+          </div>
+
+          <div>
+            <FieldLabel required>Ruangan</FieldLabel>
+            <input type="text" placeholder="Contoh: Aula Utama"
+              value={ruangan}
+              onChange={(e) => { setRuangan(e.target.value); clearError("ruangan"); }}
+              className={`input-field ${errors.ruangan ? "error" : ""}`}
+            />
+            <FieldError msg={errors.ruangan} />
           </div>
 
           <div>

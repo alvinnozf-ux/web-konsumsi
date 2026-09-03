@@ -18,6 +18,7 @@ const itemSchema = z.object({
 const createPermintaanSchema = z.object({
   namaAcara:  z.string().min(3, "Nama acara minimal 3 karakter").max(200),
   jurusan:    z.enum(JURUSAN_LIST, { errorMap: () => ({ message: "Jurusan tidak valid" }) }),
+  kampus:     z.enum(["MM2100", "03"]).default("MM2100"),
   tanggal:    z.string(),
   jamMulai:   z.string().regex(/^\d{2}:\d{2}$/, "Format jam HH:MM"),
   jamSelesai: z.string().regex(/^\d{2}:\d{2}$/, "Format jam HH:MM"),
@@ -81,12 +82,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { namaAcara, jurusan, tanggal, jamMulai, jamSelesai, ruangan, pemohonId, catatan, items } = result.data;
+  const { namaAcara, jurusan, kampus, tanggal, jamMulai, jamSelesai, ruangan, pemohonId, catatan, items } = result.data;
 
   const permintaan = await prisma.permintaan.create({
     data: {
       namaAcara,
       jurusan,
+      kampus,
       tanggal: new Date(tanggal),
       jamMulai,
       jamSelesai,
@@ -101,12 +103,13 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Kirim notif email ke Approver (fire-and-forget, gagal tidak ganggu response)
+  // Kirim notif email ke admin per kampus (fire-and-forget)
   sendPermintaanNotif({
     id: permintaan.id,
     namaAcara,
     namaPemohon: permintaan.pemohon.nama,
     jurusan,
+    kampus,
     tanggal,
     jamMulai,
     jamSelesai,

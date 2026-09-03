@@ -13,6 +13,7 @@ model User {
   nama       String
   role       String   @default("STAFF") // ADMIN | STAFF | APPROVER
   password   String
+  email      String?
   jabatan    String   @default("")
   divisi     String   @default("")
   createdAt  DateTime @default(now())
@@ -25,6 +26,7 @@ model Permintaan {
   id           String   @id @default(cuid())
   namaAcara    String
   jurusan      String
+  kampus       String   @default("MM2100") // MM2100 | 03
   tanggal      DateTime
   jamMulai     String
   jamSelesai   String

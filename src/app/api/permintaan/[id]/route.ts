@@ -16,6 +16,7 @@ const itemSchema = z.object({
 const updateSchema = z.object({
   namaAcara:   z.string().min(3).max(200).optional(),
   jurusan:     z.enum(JURUSAN_LIST).optional(),
+  kampus:      z.enum(["MM2100", "03"]).optional(),
   tanggal:     z.string().optional(),
   jamMulai:    z.string().regex(/^\d{2}:\d{2}$/).optional(),
   jamSelesai:  z.string().regex(/^\d{2}:\d{2}$/).optional(),
@@ -107,6 +108,7 @@ export async function PATCH(
       namaAcara: permintaan.namaAcara,
       namaPemohon: permintaan.pemohon.nama,
       jurusan: permintaan.jurusan,
+      kampus: permintaan.kampus,
       tanggal: permintaan.tanggal.toISOString(),
       jamMulai: permintaan.jamMulai,
       jamSelesai: permintaan.jamSelesai,
