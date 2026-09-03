@@ -139,6 +139,7 @@ const APPROVAL_NOTIF_EMAILS = [
   "reftyroyanjuniarti@smkind-mm2100.sch.id",
   "intanchaya@smkind-mm2100.sch.id",
   "diahmaulias@smkind-mm2100.sch.id",
+  "salsafatia@smkind-mm2100.sch.id",
 ];
 
 /**
