@@ -21,6 +21,7 @@ type Permintaan = {
   id: string;
   namaAcara: string;
   jurusan: string;
+  kampus: string;
   tanggal: string;
   jamMulai: string;
   jamSelesai: string;
@@ -240,6 +241,15 @@ export default function DetailPermintaanPage() {
                 <div>
                   <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Jurusan</p>
                   <p className="text-gray-900 font-semibold text-sm">{data.jurusan}</p>
+                </div>
+              </div>
+
+              {/* Kampus */}
+              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 flex items-start gap-2.5">
+                <Building2 size={14} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Kampus</p>
+                  <p className="text-gray-900 font-semibold text-sm">SMK Mitra Industri {data.kampus}</p>
                 </div>
               </div>
 

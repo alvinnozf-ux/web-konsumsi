@@ -31,6 +31,7 @@ type Permintaan = {
   id: string;
   namaAcara: string;
   jurusan: string;
+  kampus: string;
   tanggal: string;
   jamMulai: string;
   jamSelesai: string;
@@ -370,7 +371,7 @@ export default function DashboardPage() {
                   <tr key={p.id} className="hover:bg-blue-50/30 transition-colors group">
                     <td className="table-td">
                       <p className="font-semibold text-gray-900 text-sm">{p.namaAcara}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{p.jurusan}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{p.jurusan} · {p.kampus}</p>
                     </td>
                     <td className="table-td whitespace-nowrap">
                       <p className="text-sm text-gray-700">{formatTanggal(p.tanggal)}</p>
@@ -458,7 +459,7 @@ export default function DashboardPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 text-sm truncate">{p.namaAcara}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5">{p.jurusan} · {p.pemohon.nama}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{p.jurusan} · {p.kampus} · {p.pemohon.nama}</p>
                   </div>
                   <StatusBadge status={p.status} />
                 </div>
